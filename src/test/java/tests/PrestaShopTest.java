@@ -127,7 +127,7 @@ public class PrestaShopTest extends TestBase {
                 .enterCity("Riga")
                 .enterPostCode("77777")
                 .continueToShippingMethod()
-                .choseDeliveryOption(0)
+                .choseFirstDeliveryOption()
                 .continueToPaymentMethod()
                 .chosePayByCheckPaymentMethod()
                 .agreeWithTerms();

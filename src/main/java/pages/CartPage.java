@@ -21,18 +21,18 @@ public class CartPage {
 
     public BigDecimal getItemPrice(int item) {
         String price = getAllItemsInACart().get(item).find(".price").getText();
-        return Utils.parseEuroToBigDecimal(price);
+        return Utils.parseAmountWithCurrencyToBigDecimal(price);
     }
 
     public BigDecimal getItemTotalPrice(int item) {
         String totalPrice = getAllItemsInACart().get(item).find(".price strong").getText();
-        return Utils.parseEuroToBigDecimal(totalPrice);
+        return Utils.parseAmountWithCurrencyToBigDecimal(totalPrice);
 
     }
 
     public BigDecimal getPurchaseTotalPrice() {
         String totalPrice = $("[class$='cart-summary-totals'] [class='value']").getText();
-        return Utils.parseEuroToBigDecimal(totalPrice);
+        return Utils.parseAmountWithCurrencyToBigDecimal(totalPrice);
     }
 
     public CheckoutPage goToCheckOutPage() {

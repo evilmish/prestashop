@@ -17,7 +17,7 @@ public class TestBase {
         // Go to http://demo.prestashop.com
         this.mainPage = open("http://demo.prestashop.com/", MainShopPage.class);
         switchTo().frame("framelive");
-        $("[alt='PrestaShop']").waitUntil(Condition.visible, 6000);
+        $("[alt='PrestaShop']").waitUntil(Condition.visible, 12000);
     }
 
 }

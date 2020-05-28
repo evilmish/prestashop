@@ -1,12 +1,12 @@
 package pages;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import utils.Utils;
 
 import java.math.BigDecimal;
 
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.page;
 
 public class CheckoutPage {
 
@@ -25,17 +25,10 @@ public class CheckoutPage {
         return this;
     }
 
-    // TODO change logic here
-    public CheckoutPage choseDeliveryOption(int option) {
-        ElementsCollection deliveryOptions = $$(".delivery-options [type='radio']");
-        int deliveryOptionSize = deliveryOptions.size();
-        if (option >= deliveryOptionSize) {
-            deliveryOptions.get(0).scrollTo().click();
-        } else {
-            SelenideElement deliveryOption = deliveryOptions.get(0);
-            if (!deliveryOption.isSelected()) {
-                deliveryOptions.get(option).click();
-            }
+    public CheckoutPage choseFirstDeliveryOption() {
+        SelenideElement firstDeliveryOption = $(".delivery-options [type='radio']");
+        if (!firstDeliveryOption.isSelected()) {
+            firstDeliveryOption.click();
         }
         return this;
     }
@@ -68,6 +61,6 @@ public class CheckoutPage {
 
     public BigDecimal getTotalPrice() {
         String totalPrice = $("#payment-option-1-additional-information dd:first-of-type").getText();
-        return Utils.parseEuroToBigDecimal(totalPrice);
+        return Utils.parseAmountWithCurrencyToBigDecimal(totalPrice);
     }
 }

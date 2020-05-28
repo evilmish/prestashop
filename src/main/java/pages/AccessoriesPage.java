@@ -32,7 +32,6 @@ public class AccessoriesPage {
     }
 
     public AccessoriesPage selectSpecificCheckBox(FilterCategories category, EnumCategories checkBox) {
-
         waitOverlayToDisappear();
         ElementsCollection checkBoxes = getFilterCategory(category).findAll("li");
         SelenideElement checkBoxElement = checkBoxes.stream()
@@ -45,8 +44,6 @@ public class AccessoriesPage {
     }
 
     public AccessoriesPage changePriceRange(int newMinPrice, int newMaxPrice) {
-
-
         int[] pixelOffsetsToMoveBy = getPixelOffsetForNewMinMaxPrice(newMinPrice, newMaxPrice);
 
         SelenideElement leftHandle = $("[class^='ui-slider-handle']");
@@ -70,8 +67,8 @@ public class AccessoriesPage {
         SelenideElement priceElement = getFilterCategory(FilterCategories.PRICE);
         priceElement.scrollIntoView(true);
         String[] priceRange = priceElement.find("li p").getText().split(" - ");
-        int initialMinPrice = Utils.parseEuroToBigDecimal(priceRange[0]).intValue();
-        int initialMaxPrice = Utils.parseEuroToBigDecimal(priceRange[1]).intValue();
+        int initialMinPrice = Utils.parseAmountWithCurrencyToBigDecimal(priceRange[0]).intValue();
+        int initialMaxPrice = Utils.parseAmountWithCurrencyToBigDecimal(priceRange[1]).intValue();
 
         return new int[]{initialMinPrice, initialMaxPrice};
     }
