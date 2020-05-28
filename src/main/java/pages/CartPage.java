@@ -6,6 +6,7 @@ import utils.Utils;
 import java.math.BigDecimal;
 
 import static com.codeborne.selenide.Selenide.*;
+import static java.math.BigDecimal.ZERO;
 
 public class CartPage {
 
@@ -44,6 +45,16 @@ public class CartPage {
         back();
         switchTo().frame("framelive");
         return page(AccessoriesPage.class);
+    }
+
+    public BigDecimal getAllItemTotalPrice() {
+        int itemQuantity = getAllItemsInACart().size();
+        BigDecimal sumOfTotalPrices = ZERO;
+
+        for (int i = 0; i < itemQuantity; i++) {
+            sumOfTotalPrices = sumOfTotalPrices.add(getItemTotalPrice(i));
+        }
+        return sumOfTotalPrices;
     }
 
 }

@@ -87,17 +87,17 @@ public class PrestaShopTest extends TestBase {
         // Go back to filtered list of items, choose one more item
         // Go to cart
         //TODO re-think this approach
-        int newRandomItem = Utils.returnNewRandomNumberIfItsNotProvidedNumber(randomItem, listedProductQuantity);
+//        int newRandomItem = Utils.returnNewRandomNumberIfItsNotProvidedNumber(randomItem, listedProductQuantity);
+        randomItem = RandomUtils.nextInt(0, listedProductQuantity);
 
         cartPage
                 .goBackToSortedAccessoriesPage()
-                .choseItem(newRandomItem)
+                .choseItem(randomItem)
                 .addToCart()
                 .proceedToCheckout();
 
         //Check a total price is correctly calculated
-        BigDecimal secondAddedItemTotalPrice = cartPage.getItemTotalPrice(1);
-        BigDecimal allItemsTotalPrice = firstAddedItemTotalPrice.add(secondAddedItemTotalPrice);
+        BigDecimal allItemsTotalPrice = cartPage.getAllItemTotalPrice();
         purchaseTotalSummary = cartPage.getPurchaseTotalPrice();
 
         softAssert.assertEquals(allItemsTotalPrice,
@@ -128,6 +128,7 @@ public class PrestaShopTest extends TestBase {
         // Confirm your order and check order details
         checkoutPage.goToOrderConfirmationPage();
 
+        softAssert.assertAll();
     }
 
 
