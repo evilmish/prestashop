@@ -26,47 +26,47 @@ public class CheckoutPage {
     }
 
     // TODO change logic here
-    public CheckoutPage choseDeliveryOption(int option){
+    public CheckoutPage choseDeliveryOption(int option) {
         ElementsCollection deliveryOptions = $$(".delivery-options [type='radio']");
         int deliveryOptionSize = deliveryOptions.size();
-        if(option >= deliveryOptionSize){
+        if (option >= deliveryOptionSize) {
             deliveryOptions.get(0).scrollTo().click();
-        }else{
+        } else {
             SelenideElement deliveryOption = deliveryOptions.get(0);
-            if(!deliveryOption.isSelected()) {
+            if (!deliveryOption.isSelected()) {
                 deliveryOptions.get(option).click();
             }
         }
         return this;
     }
 
-    public CheckoutPage chosePayByCheckPaymentMethod(){
+    public CheckoutPage chosePayByCheckPaymentMethod() {
         $("#payment-option-1").click();
         return this;
     }
 
-    public CheckoutPage continueToShippingMethod(){
+    public CheckoutPage continueToShippingMethod() {
         $("[name=confirm-addresses]").click();
         return this;
     }
 
-    public CheckoutPage continueToPaymentMethod(){
+    public CheckoutPage continueToPaymentMethod() {
         $("[name=confirmDeliveryOption]").click();
         return this;
     }
 
-    public CheckoutPage agreeWithTerms(){
+    public CheckoutPage agreeWithTerms() {
         $("#conditions-to-approve input").click();
         return this;
     }
 
     //TODO check name and etc
-    public OrderPage goToOrderConfirmationPage(){
+    public OrderPage goToOrderConfirmationPage() {
         $("#payment-confirmation").click();
         return page(OrderPage.class);
     }
 
-    public BigDecimal getTotalPrice(){
+    public BigDecimal getTotalPrice() {
         String totalPrice = $("#payment-option-1-additional-information dd:first-of-type").getText();
         return Utils.parseEuroToBigDecimal(totalPrice);
     }

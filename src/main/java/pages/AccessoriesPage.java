@@ -7,16 +7,16 @@ import static com.codeborne.selenide.Selenide.page;
 
 public class AccessoriesPage {
 
-    public ItemPage choseItem(int itemIndex){
+    public ItemPage choseItem(int itemIndex) {
         getAllListedItems().get(itemIndex).click();
         return page(ItemPage.class);
     }
 
-    public int returnAmountOfListedItems(){
+    public int returnAmountOfListedItems() {
         return getAllListedItems().size();
     }
 
-    private ElementsCollection getAllListedItems(){
+    private ElementsCollection getAllListedItems() {
         return $$("[class^='product-miniature']");
     }
 }

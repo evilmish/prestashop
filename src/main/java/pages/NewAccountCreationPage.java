@@ -5,7 +5,7 @@ import utils.SocialTitle;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.page;
 
-public class NewAccountCreationPage{
+public class NewAccountCreationPage {
 
     public NewAccountCreationPage choseSocialTitle(SocialTitle title) {
         if (title == SocialTitle.MR) {
