@@ -1,6 +1,6 @@
 package pages;
 
-import utils.SocialTitle;
+import enums.SocialTitle;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.page;
