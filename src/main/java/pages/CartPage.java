@@ -50,7 +50,6 @@ public class CartPage {
     public BigDecimal getAllItemTotalPrice() {
         int itemQuantity = getAllItemsInACart().size();
         BigDecimal sumOfTotalPrices = ZERO;
-
         for (int i = 0; i < itemQuantity; i++) {
             sumOfTotalPrices = sumOfTotalPrices.add(getItemTotalPrice(i));
         }

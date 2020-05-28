@@ -5,24 +5,25 @@ import enums.FilterCategories;
 import enums.SocialTitle;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.AccessoriesPage;
 import pages.CartPage;
 import pages.CheckoutPage;
 import pages.NewAccountCreationPage;
-import utils.Utils;
 
 import java.math.BigDecimal;
 
 public class PrestaShopTest extends TestBase {
+    private BigDecimal purchaseTotalSummary;
+    private int randomItem;
+    private int listedProductQuantity;
 
     @Test
-    public void purchaseMakingTest() {
-
+    public void registerAccountTest() {
         String name = "Johnny";
         String surName = "Knoxville";
-        SoftAssert softAssert = new SoftAssert();
 
         //small hack to have always new email so we dont face issue with "email already exists"
         String generatedRandomStringForEmail = RandomStringUtils.random(7, true, false);
@@ -47,22 +48,26 @@ public class PrestaShopTest extends TestBase {
                 .getNavigationBar()
                 .getLoggedUserNameAndSurname();
         String expectedUser = name + " " + surName;
-        softAssert.assertEquals(actualUser, expectedUser, "User not logged in");
+        Assert.assertEquals(actualUser, expectedUser, "User not logged in");
+    }
 
+    @Test(dependsOnMethods = {"registerAccountTest"})
+    public void addFirstItemToCartTest() {
+
+        SoftAssert softAssert = new SoftAssert();
         // Open "Accessories" section
         AccessoriesPage accessories = getMainPage()
                 .getNavigationBar()
                 .goToAccessoriesPage();
 
         // Filter out items of white colour within price range 18-23
-
         accessories
                 .changePriceRange(18, 23)
                 .selectSpecificCheckBox(FilterCategories.COLOR, ColorCategories.WHITE);
 
         // Randomly choose one of items, increase quantity of items and add to cart
-        int listedProductQuantity = accessories.returnAmountOfListedItems();
-        int randomItem = RandomUtils.nextInt(0, listedProductQuantity);
+        listedProductQuantity = accessories.returnAmountOfListedItems();
+        randomItem = RandomUtils.nextInt(0, listedProductQuantity);
 
         CartPage cartPage = accessories
                 .choseItem(randomItem)
@@ -75,7 +80,7 @@ public class PrestaShopTest extends TestBase {
         BigDecimal firstAddedItemPrice = cartPage.getItemPrice(0);
         BigDecimal firstAddedItemTotalPrice = cartPage.getItemTotalPrice(0);
         BigDecimal firstItemExpectedTotalPrice = firstAddedItemPrice.multiply(BigDecimal.valueOf(addedItemQuantity));
-        BigDecimal purchaseTotalSummary = cartPage.getPurchaseTotalPrice();
+        purchaseTotalSummary = cartPage.getPurchaseTotalPrice();
 
         softAssert.assertEquals(firstAddedItemTotalPrice,
                 firstItemExpectedTotalPrice,
@@ -84,13 +89,16 @@ public class PrestaShopTest extends TestBase {
                 purchaseTotalSummary,
                 "Total Summary Differs from first Added Item Total Price");
 
+    }
+
+    @Test(dependsOnMethods = {"addFirstItemToCartTest"})
+    public void addSecondItemToCardTest() {
+
         // Go back to filtered list of items, choose one more item
         // Go to cart
-        //TODO re-think this approach
-//        int newRandomItem = Utils.returnNewRandomNumberIfItsNotProvidedNumber(randomItem, listedProductQuantity);
         randomItem = RandomUtils.nextInt(0, listedProductQuantity);
 
-        cartPage
+        CartPage cartPage = new CartPage()
                 .goBackToSortedAccessoriesPage()
                 .choseItem(randomItem)
                 .addToCart()
@@ -100,13 +108,16 @@ public class PrestaShopTest extends TestBase {
         BigDecimal allItemsTotalPrice = cartPage.getAllItemTotalPrice();
         purchaseTotalSummary = cartPage.getPurchaseTotalPrice();
 
-        softAssert.assertEquals(allItemsTotalPrice,
+        Assert.assertEquals(allItemsTotalPrice,
                 purchaseTotalSummary,
                 "Total Price Of All Prices Differ From Total Summary");
+    }
+
+    @Test(dependsOnMethods = {"addSecondItemToCardTest"})
+    public void checkOutTest() {
 
         // Checkout
-        CheckoutPage checkoutPage = cartPage.goToCheckOutPage();
-
+        CheckoutPage checkoutPage = new CartPage().goToCheckOutPage();
         // fill out the form
         // choose a shipping method
         // choose "payment by Check", check the total price
@@ -121,15 +132,12 @@ public class PrestaShopTest extends TestBase {
                 .chosePayByCheckPaymentMethod()
                 .agreeWithTerms();
 
-        softAssert.assertEquals(checkoutPage.getTotalPrice(),
+        Assert.assertEquals(checkoutPage.getTotalPrice(),
                 purchaseTotalSummary,
                 "Purchase total Summary Differs From Checkout Price");
 
         // Confirm your order and check order details
         checkoutPage.goToOrderConfirmationPage();
 
-        softAssert.assertAll();
     }
-
-
 }

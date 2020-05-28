@@ -7,7 +7,7 @@ import enums.FilterCategories;
 import utils.Utils;
 
 import static com.codeborne.selenide.Selenide.*;
-import static utils.Utils.waitOverlayDisappears;
+import static utils.Utils.waitOverlayToDisappear;
 
 public class AccessoriesPage {
 
@@ -33,7 +33,7 @@ public class AccessoriesPage {
 
     public AccessoriesPage selectSpecificCheckBox(FilterCategories category, EnumCategories checkBox) {
 
-        waitOverlayDisappears();
+        waitOverlayToDisappear();
         ElementsCollection checkBoxes = getFilterCategory(category).findAll("li");
         SelenideElement checkBoxElement = checkBoxes.stream()
                 .filter(el -> el.find("a").getText().contains(checkBox.returnEnumValue()))
@@ -55,7 +55,7 @@ public class AccessoriesPage {
                 .release()
                 .perform();
 
-        waitOverlayDisappears();
+        waitOverlayToDisappear();
 
         SelenideElement rightHandle = $("[class^='ui-slider-handle']:last-of-type");
         actions()
