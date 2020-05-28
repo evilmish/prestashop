@@ -1,12 +1,12 @@
 package pages;
 
 import com.codeborne.selenide.ElementsCollection;
-import utils.Utils;
 
 import java.math.BigDecimal;
 
 import static com.codeborne.selenide.Selenide.*;
 import static java.math.BigDecimal.ZERO;
+import static utils.Utils.parseAmountWithCurrencyToBigDecimal;
 
 public class CartPage {
 
@@ -21,18 +21,18 @@ public class CartPage {
 
     public BigDecimal getItemPrice(int item) {
         String price = getAllItemsInACart().get(item).find(".price").getText();
-        return Utils.parseAmountWithCurrencyToBigDecimal(price);
+        return parseAmountWithCurrencyToBigDecimal(price);
     }
 
     public BigDecimal getItemTotalPrice(int item) {
         String totalPrice = getAllItemsInACart().get(item).find(".price strong").getText();
-        return Utils.parseAmountWithCurrencyToBigDecimal(totalPrice);
+        return parseAmountWithCurrencyToBigDecimal(totalPrice);
 
     }
 
     public BigDecimal getPurchaseTotalPrice() {
         String totalPrice = $("[class$='cart-summary-totals'] [class='value']").getText();
-        return Utils.parseAmountWithCurrencyToBigDecimal(totalPrice);
+        return parseAmountWithCurrencyToBigDecimal(totalPrice);
     }
 
     public CheckoutPage goToCheckOutPage() {

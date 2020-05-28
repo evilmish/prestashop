@@ -55,6 +55,8 @@ public class PrestaShopTest extends TestBase {
     public void addFirstItemToCartTest() {
 
         SoftAssert softAssert = new SoftAssert();
+        int newMinPrice = 18;
+        int newMaxPrice = 23;
         // Open "Accessories" section
         AccessoriesPage accessories = getMainPage()
                 .getNavigationBar()
@@ -62,8 +64,13 @@ public class PrestaShopTest extends TestBase {
 
         // Filter out items of white colour within price range 18-23
         accessories
-                .changePriceRange(18, 23)
+                .changePriceRange(newMinPrice, newMaxPrice)
                 .selectSpecificCheckBox(FilterCategories.COLOR, ColorCategories.WHITE);
+
+        // Check the items are correctly filtered
+        boolean isItemsCorrectPrice = accessories
+                .isAllListedItemPriceLessThanProvided(BigDecimal.valueOf(newMinPrice), BigDecimal.valueOf(newMaxPrice));
+        softAssert.assertTrue(isItemsCorrectPrice, "Some of Item Prices are outside range");
 
         // Randomly choose one of items, increase quantity of items and add to cart
         listedProductQuantity = accessories.returnAmountOfListedItems();
@@ -88,6 +95,7 @@ public class PrestaShopTest extends TestBase {
         softAssert.assertEquals(firstAddedItemTotalPrice,
                 purchaseTotalSummary,
                 "Total Summary Differs from first Added Item Total Price");
+        softAssert.assertAll();
 
     }
 

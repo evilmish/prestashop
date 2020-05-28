@@ -6,6 +6,9 @@ import enums.EnumCategories;
 import enums.FilterCategories;
 import utils.Utils;
 
+import java.math.BigDecimal;
+import java.util.stream.Collectors;
+
 import static com.codeborne.selenide.Selenide.*;
 import static utils.Utils.waitOverlayToDisappear;
 
@@ -61,6 +64,18 @@ public class AccessoriesPage {
                 .perform();
 
         return this;
+    }
+
+    public boolean isAllListedItemPriceLessThanProvided(BigDecimal providedMinPrice, BigDecimal providedMaxPrice) {
+        return getAllListedItems().stream()
+                .map(item -> item.find(".price").getText())
+                .collect(Collectors.toList())
+                .stream()
+                .map(Utils::parseAmountWithCurrencyToBigDecimal)
+                .map(value -> value.compareTo(providedMinPrice) >= 0 && value.compareTo(providedMaxPrice) <= 0)
+                .filter(result -> !result)
+                .findFirst()
+                .orElse(true);
     }
 
     private int[] getListWithActualMinAndMaxPrice() {
