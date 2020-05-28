@@ -8,7 +8,6 @@ import static com.codeborne.selenide.Selenide.page;
 public class NewAccountCreationPage{
 
     public NewAccountCreationPage choseSocialTitle(SocialTitle title) {
-
         if (title == SocialTitle.MR) {
             $("[name='id_gender'][value='1']").click();
         } else {

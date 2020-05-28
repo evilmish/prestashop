@@ -13,7 +13,7 @@ import utils.Utils;
 
 import java.math.BigDecimal;
 
-public class BaseTest extends TestBase {
+public class PrestaShopTest extends TestBase {
 
     @Test
     public void purchaseMakingTest() {
@@ -40,7 +40,9 @@ public class BaseTest extends TestBase {
                 .agreeWithTerms()
                 .submitRegistrationForm();
 
-        String actualUser = getMainPage().getLoggedUserNameAndSurname();
+        String actualUser = getMainPage()
+                .getNavigationBar()
+                .getLoggedUserNameAndSurname();
         String expectedUser = name + " " + surName;
         Assert.assertEquals(actualUser, expectedUser);
 
