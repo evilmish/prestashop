@@ -1,5 +1,6 @@
 package pages;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 
 import java.math.BigDecimal;
@@ -31,7 +32,9 @@ public class CartPage {
     }
 
     public BigDecimal getPurchaseTotalPrice() {
-        String totalPrice = $("[class$='cart-summary-totals'] [class='value']").getText();
+        String totalPrice = $("[class$='cart-summary-totals'] [class='value']")
+                .shouldBe(Condition.visible)
+                .getText();
         return parseAmountWithCurrencyToBigDecimal(totalPrice);
     }
 

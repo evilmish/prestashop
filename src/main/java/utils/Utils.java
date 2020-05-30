@@ -23,6 +23,7 @@ public class Utils {
         return BigDecimal.ZERO;
     }
 
+    // Overlay that appears after switching categories or going to other pages
     public static void waitOverlayToDisappear() {
         $(".faceted-overlay").waitUntil(Condition.disappears, 1000);
     }

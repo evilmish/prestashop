@@ -69,8 +69,11 @@ public class PrestaShopTest extends TestBase {
 
         // Check the items are correctly filtered
         boolean isItemsCorrectPrice = accessories
-                .isAllListedItemPriceLessThanProvided(BigDecimal.valueOf(newMinPrice), BigDecimal.valueOf(newMaxPrice));
+                .isAllListedItemPricesAreBetweenRange(BigDecimal.valueOf(newMinPrice), BigDecimal.valueOf(newMaxPrice));
+        boolean isItemsCorrectColor = accessories
+                .isAllListedItemColorsMatch(ColorCategories.BLACK);
         softAssert.assertTrue(isItemsCorrectPrice, "Some of Item Prices are outside range");
+        softAssert.assertTrue(isItemsCorrectColor, "Some of Item Colors are wrong");
 
         // Randomly choose one of items, increase quantity of items and add to cart
         listedProductQuantity = accessories.returnAmountOfListedItems();

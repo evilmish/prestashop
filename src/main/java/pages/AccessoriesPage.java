@@ -2,6 +2,7 @@ package pages;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import enums.ColorCategories;
 import enums.EnumCategories;
 import enums.FilterCategories;
 import utils.Utils;
@@ -23,7 +24,7 @@ public class AccessoriesPage {
         return getAllListedItems().size();
     }
 
-    private ElementsCollection getAllListedItems() {
+    public ElementsCollection getAllListedItems() {
         return $$("[class^='product-miniature']");
     }
 
@@ -66,13 +67,23 @@ public class AccessoriesPage {
         return this;
     }
 
-    public boolean isAllListedItemPriceLessThanProvided(BigDecimal providedMinPrice, BigDecimal providedMaxPrice) {
+    public boolean isAllListedItemPricesAreBetweenRange(BigDecimal minPrice, BigDecimal maxPrice) {
+        waitOverlayToDisappear();
         return getAllListedItems().stream()
                 .map(item -> item.find(".price").getText())
-                .collect(Collectors.toList())
-                .stream()
                 .map(Utils::parseAmountWithCurrencyToBigDecimal)
-                .map(value -> value.compareTo(providedMinPrice) >= 0 && value.compareTo(providedMaxPrice) <= 0)
+                .map(value -> value.compareTo(minPrice) >= 0 && value.compareTo(maxPrice) <= 0)
+                .filter(result -> !result)
+                .findFirst()
+                .orElse(true);
+    }
+
+    public boolean isAllListedItemColorsMatch(ColorCategories color) {
+        waitOverlayToDisappear();
+        return getAllListedItems().stream()
+                .map(item -> item.findAll(".variant-links a"))
+                .map(variants -> variants.stream().map(SelenideElement::getText).collect(Collectors.toList()))
+                .map(colors -> colors.contains(color.returnEnumValue()))
                 .filter(result -> !result)
                 .findFirst()
                 .orElse(true);
@@ -95,10 +106,10 @@ public class AccessoriesPage {
         int initialMaxPrice = minAndMaxPrices[1];
 
         int difBetweenMinAndMax = initialMaxPrice - initialMinPrice;
-        double pixelPerOneEuro = slideWidthInPixels / difBetweenMinAndMax;
+        double pixelsPerCurrencyUnit = slideWidthInPixels / difBetweenMinAndMax;
 
-        double moveByMin = (newMinPrice - initialMinPrice) * pixelPerOneEuro;
-        double moveByMax = (newMaxPrice - initialMaxPrice) * pixelPerOneEuro;
+        double moveByMin = (newMinPrice - initialMinPrice) * pixelsPerCurrencyUnit;
+        double moveByMax = (newMaxPrice - initialMaxPrice) * pixelsPerCurrencyUnit;
 
         return new int[]{(int) moveByMin, (int) moveByMax};
 
