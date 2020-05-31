@@ -13,11 +13,13 @@ public class ItemPage {
     }
 
     public ItemPage addToCart() {
-        $("[data-button-action='add-to-cart']").click();
+        $("[data-button-action='add-to-cart']")
+                .scrollIntoView(true)
+                .click();
         return this;
     }
 
-    public CartPage proceedToCheckout() {
+    public CartPage goToCheckoutPage() {
         $("[class$='btn-primary']").scrollTo().click();
         return page(CartPage.class);
     }

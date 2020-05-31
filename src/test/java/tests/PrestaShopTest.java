@@ -2,7 +2,7 @@ package tests;
 
 import enums.ColorCategories;
 import enums.FilterCategories;
-import enums.SocialTitle;
+import enums.Title;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.Assert;
@@ -15,28 +15,29 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class PrestaShopTest extends TestBase {
-    private BigDecimal purchaseTotalSummary;
+    private BigDecimal purchaseTotalPrice;
     private int randomItem;
-    private int listedProductQuantity;
-    private List<OrderedItem> orderedItems;
+    private int listedItemAmount;
+    private List<OrderedItem> orderedItemsInCart;
 
     @Test
     public void registerAccountTest() {
+
         String name = "Johnny";
         String surName = "Knoxville";
 
         //small hack to have always new email so we dont face issue with "email already exists"
-        String generatedRandomStringForEmail = RandomStringUtils.random(7, true, false);
-        String email = name + "." + surName + "@" + generatedRandomStringForEmail + ".com";
+        String randomString = RandomStringUtils.random(7, true, false);
+        String email = name + "." + surName + "@" + randomString + ".com";
 
         // Register an account, check you're logged in
-        NewAccountCreationPage createAccountPage = getMainPage()
+        AccountCreationPage accountCreatingPage = getMainPage()
                 .getNavigationBar()
-                .goToSignInPage()
+                .goToLoginPage()
                 .goToAccountCreationPage();
 
-        createAccountPage
-                .choseSocialTitle(SocialTitle.MR)
+        accountCreatingPage
+                .choseTitle(Title.MR)
                 .enterFirstName(name)
                 .enterLastName(surName)
                 .enterEmail(email)
@@ -57,8 +58,8 @@ public class PrestaShopTest extends TestBase {
     public void addFirstItemToCartTest() {
 
         SoftAssert softAssert = new SoftAssert();
-        int newMinPrice = 18;
-        int newMaxPrice = 23;
+        BigDecimal newMinPrice = BigDecimal.valueOf(18);
+        BigDecimal newMaxPrice = BigDecimal.valueOf(23);
 
         // Open "Accessories" section
         AccessoriesPage accessories = getMainPage()
@@ -68,41 +69,38 @@ public class PrestaShopTest extends TestBase {
         // Filter out items of white colour within price range 18-23
         accessories
                 .changePriceRange(newMinPrice, newMaxPrice)
-                .selectSpecificCheckBox(FilterCategories.COLOR, ColorCategories.WHITE);
+                .selectCheckBox(FilterCategories.COLOR, ColorCategories.WHITE);
 
         // Check the items are correctly filtered
-        boolean isItemsCorrectPrice = accessories
-                .isAllListedItemPricesAreBetweenRange(BigDecimal.valueOf(newMinPrice), BigDecimal.valueOf(newMaxPrice));
-        boolean isItemsCorrectColor = accessories
-                .isAllListedItemColorsMatch(ColorCategories.BLACK);
-        softAssert.assertTrue(isItemsCorrectPrice, "Some of Item Prices are outside range");
-        softAssert.assertTrue(isItemsCorrectColor, "Some of Item Colors are wrong");
+        softAssert.assertTrue(accessories.isListedItemPricesBetweenRange(newMinPrice, newMaxPrice),
+                "Some item prices are outside range - min: " + newMinPrice + " max: " + newMaxPrice);
+        softAssert.assertTrue(accessories.isListedItemColorsMatch(ColorCategories.WHITE),
+                "Some item color do not match: " + ColorCategories.WHITE.getValue());
 
         // Randomly choose one of items, increase quantity of items and add to cart
-        listedProductQuantity = accessories.returnAmountOfListedItems();
-        randomItem = RandomUtils.nextInt(0, listedProductQuantity);
+        listedItemAmount = accessories.getListedItemAmount();
+        randomItem = RandomUtils.nextInt(0, listedItemAmount);
 
         CartPage cartPage = accessories
                 .choseItem(randomItem)
                 .increaseQuantityBy(6)
                 .addToCart()
-                .proceedToCheckout();
+                .goToCheckoutPage();
 
         // Check a price is correctly calculated
-        int addedItemQuantity = cartPage.getItemAmount(0);
-        BigDecimal firstAddedItemPrice = cartPage.getItemPrice(0);
-        BigDecimal firstAddedItemTotalPrice = cartPage.getItemTotalPrice(0);
-        BigDecimal firstItemExpectedTotalPrice = firstAddedItemPrice.multiply(BigDecimal.valueOf(addedItemQuantity));
-        purchaseTotalSummary = cartPage.getPurchaseTotalPrice();
+        int addedItemQuantity = cartPage.getItemQuantity(0);
+        BigDecimal addedItemPrice = cartPage.getItemPrice(0);
+        BigDecimal addedItemTotalPrice = cartPage.getItemTotalPrice(0);
+        BigDecimal addedItemExpectedTotalPrice = addedItemPrice.multiply(BigDecimal.valueOf(addedItemQuantity));
+        purchaseTotalPrice = cartPage.getPurchaseTotalPrice();
 
-        softAssert.assertEquals(firstAddedItemTotalPrice,
-                firstItemExpectedTotalPrice,
-                "Expected and Actual Total Prices Differ");
-        softAssert.assertEquals(firstAddedItemTotalPrice,
-                purchaseTotalSummary,
-                "Total Summary Differs from first Added Item Total Price");
+        softAssert.assertEquals(addedItemTotalPrice,
+                addedItemExpectedTotalPrice,
+                "Actual and expected total prices differ");
+        softAssert.assertEquals(addedItemTotalPrice,
+                purchaseTotalPrice,
+                "Total price differs from added item total price");
         softAssert.assertAll();
-
     }
 
     @Test(dependsOnMethods = {"addFirstItemToCartTest"})
@@ -110,22 +108,22 @@ public class PrestaShopTest extends TestBase {
 
         // Go back to filtered list of items, choose one more item
         // Go to cart
-        randomItem = RandomUtils.nextInt(0, listedProductQuantity);
-
+        randomItem = RandomUtils.nextInt(0, listedItemAmount);
         CartPage cartPage = new CartPage()
                 .goBackToSortedAccessoriesPage()
                 .choseItem(randomItem)
                 .addToCart()
-                .proceedToCheckout();
+                .goToCheckoutPage();
 
         //Check a total price is correctly calculated
-        BigDecimal allItemsTotalPrice = cartPage.getAllItemTotalPrice();
-        purchaseTotalSummary = cartPage.getPurchaseTotalPrice();
-        orderedItems = cartPage.getOrderedItemsList();
+        BigDecimal allItemTotalPrice = cartPage.getAllItemTotalPrice();
+        purchaseTotalPrice = cartPage.getPurchaseTotalPrice();
+        // Needed for next tests to compare with checkout page
+        orderedItemsInCart = cartPage.getOrderedItemsList();
 
-        Assert.assertEquals(allItemsTotalPrice,
-                purchaseTotalSummary,
-                "Total Price Of All Prices Differ From Total Summary");
+        Assert.assertEquals(allItemTotalPrice,
+                purchaseTotalPrice,
+                "Total price of all items differ from price in summary");
     }
 
     @Test(dependsOnMethods = {"addSecondItemToCardTest"})
@@ -135,10 +133,10 @@ public class PrestaShopTest extends TestBase {
 
         // Checkout
         CheckoutPage checkoutPage = new CartPage().goToCheckOutPage();
+
         // fill out the form
         // choose a shipping method
         // choose "payment by Check", check the total price
-
         checkoutPage
                 .enterAddress("My Address")
                 .enterCity("Riga")
@@ -150,22 +148,23 @@ public class PrestaShopTest extends TestBase {
                 .agreeWithTerms();
 
         softAssert.assertEquals(checkoutPage.getTotalPrice(),
-                purchaseTotalSummary,
-                "Purchase total Summary Differs From Checkout Price");
+                purchaseTotalPrice,
+                "Checkout total price differs from purchased item price");
 
         // Confirm your order and check order details
+        OrderConfirmationPage confirmationPage = checkoutPage.goToOrderConfirmationPage();
 
-        OrderConfirmedPage confirmationPage = checkoutPage.goToOrderConfirmationPage();
-
-        List<OrderedItem> itemsInConfirmationPage = confirmationPage.getOrderedItems();
+        List<OrderedItem> orderedItemsInConfirmationPage = confirmationPage.getOrderedItems();
         String confirmationMessage = confirmationPage.getConfirmationMessage();
-        BigDecimal totalPrice = confirmationPage.getTotalPrice();
+        BigDecimal confirmationTotalPrice = confirmationPage.getTotalPrice();
 
-        for (int i = 0; i < itemsInConfirmationPage.size(); i++) {
-            softAssert.assertEquals(itemsInConfirmationPage.get(i).toString(), orderedItems.get(i).toString());
+        for (int i = 0; i < orderedItemsInConfirmationPage.size(); i++) {
+            softAssert.assertEquals(orderedItemsInConfirmationPage.get(i).toString(), orderedItemsInCart.get(i).toString());
         }
-        softAssert.assertEquals(confirmationMessage, "YOUR ORDER IS CONFIRMED", "Confirmation message not found");
-        softAssert.assertEquals(totalPrice, purchaseTotalSummary, "Total price differ");
+        softAssert.assertEquals(confirmationMessage, "YOUR ORDER IS CONFIRMED",
+                "Confirmation message not found");
+        softAssert.assertEquals(confirmationTotalPrice, purchaseTotalPrice,
+                "Confirmation total price differs from purchase total price");
 
         softAssert.assertAll();
     }
@@ -174,12 +173,12 @@ public class PrestaShopTest extends TestBase {
     public void logOutTest() {
 
         // Logout, check you've been successfully logged out
-        SignInPage signInPage = new OrderConfirmedPage().getNavigationBar().logout();
-        Assert.assertFalse(signInPage.getNavigationBar().isLogOutButtonVisible(), "Log Out button is visible when should not");
-        Assert.assertFalse(signInPage.getNavigationBar().isAccountButtonVisible(), "Account button is visible when should not");
-        Assert.assertTrue(signInPage.isLoginButtonAvailable(), "Login button not visible");
-
+        LoginPage loginPage = new OrderConfirmationPage().getNavigationBar().logout();
+        Assert.assertFalse(loginPage.getNavigationBar().isLogOutButtonVisible(),
+                "Log out button is visible when should not");
+        Assert.assertFalse(loginPage.getNavigationBar().isAccountButtonVisible(),
+                "Account button is visible when should not");
+        Assert.assertTrue(loginPage.isLoginButtonAvailable(),
+                "Login button not visible");
     }
-
-
 }

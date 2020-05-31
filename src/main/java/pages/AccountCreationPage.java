@@ -1,14 +1,13 @@
 package pages;
 
-import enums.SocialTitle;
+import enums.Title;
 
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.page;
 
-public class NewAccountCreationPage {
+public class AccountCreationPage {
 
-    public NewAccountCreationPage choseSocialTitle(SocialTitle title) {
-        if (title == SocialTitle.MR) {
+    public AccountCreationPage choseTitle(Title title) {
+        if (title == Title.MR) {
             $("[name='id_gender'][value='1']").click();
         } else {
             $("[name='id_gender'][value='2']").click();
@@ -16,33 +15,32 @@ public class NewAccountCreationPage {
         return this;
     }
 
-    public NewAccountCreationPage enterFirstName(String firstName) {
+    public AccountCreationPage enterFirstName(String firstName) {
         $("[name='firstname']").scrollTo().setValue(firstName);
         return this;
     }
 
-    public NewAccountCreationPage enterLastName(String lastName) {
+    public AccountCreationPage enterLastName(String lastName) {
         $("[name='lastname']").scrollTo().setValue(lastName);
         return this;
     }
 
-    public NewAccountCreationPage enterEmail(String email) {
+    public AccountCreationPage enterEmail(String email) {
         $("[name='email']").scrollTo().setValue(email);
         return this;
     }
 
-    public NewAccountCreationPage enterPassword(String password) {
+    public AccountCreationPage enterPassword(String password) {
         $("[name='password']").scrollTo().setValue(password);
         return this;
     }
 
-    public NewAccountCreationPage agreeWithTerms() {
+    public AccountCreationPage agreeWithTerms() {
         $("[name='psgdpr']").click();
         return this;
     }
 
-    public MainShopPage submitRegistrationForm() {
+    public void submitRegistrationForm() {
         $("[class*=form-control-submit]").click();
-        return page(MainShopPage.class);
     }
 }

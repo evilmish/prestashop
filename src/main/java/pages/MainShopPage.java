@@ -1,13 +1,13 @@
 package pages;
 
 import lombok.Getter;
-import pages.fragments.HeaderNavigationFragment;
+import pages.fragments.NavigationFragment;
 
 import static com.codeborne.selenide.Selenide.page;
 
 public class MainShopPage {
 
     @Getter
-    private HeaderNavigationFragment navigationBar = page(HeaderNavigationFragment.class);
+    private NavigationFragment navigationBar = page(NavigationFragment.class);
 
 }

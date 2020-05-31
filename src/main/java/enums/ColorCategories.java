@@ -10,7 +10,7 @@ public enum ColorCategories implements EnumCategories {
     }
 
     @Override
-    public String returnEnumValue() {
+    public String getValue() {
         return this.color;
     }
 }

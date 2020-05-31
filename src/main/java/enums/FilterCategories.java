@@ -10,13 +10,12 @@ public enum FilterCategories {
     COMPOSITION("Composition"),
     BRAND("Brand"),
     PRICE("Price"),
-    PAPER_TYPE("");
+    PAPER_TYPE("Paper Type");
 
     private final String categoryText;
 
     FilterCategories(String categoryText) {
         this.categoryText = categoryText;
     }
-
 }
 

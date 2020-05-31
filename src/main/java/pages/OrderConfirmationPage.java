@@ -2,22 +2,23 @@ package pages;
 
 import com.codeborne.selenide.ElementsCollection;
 import lombok.Getter;
-import pages.fragments.HeaderNavigationFragment;
+import pages.fragments.NavigationFragment;
 import pages.order_info.OrderedItem;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.codeborne.selenide.Selenide.*;
 import static utils.Utils.parseAmountWithCurrencyToBigDecimal;
 
-public class OrderConfirmedPage {
+public class OrderConfirmationPage {
 
     @Getter
-    private HeaderNavigationFragment navigationBar = page(HeaderNavigationFragment.class);
+    private NavigationFragment navigationBar = page(NavigationFragment.class);
 
     public String getConfirmationMessage() {
         return $(".h1.card-title").getText().replace("\uE876", "");
@@ -35,7 +36,7 @@ public class OrderConfirmedPage {
         orderedItems.forEach(item -> {
             ElementsCollection itemInfo = item.findAll("[class^=col-sm]");
             String productDescription = itemInfo.get(1).find("span").getText();
-            List<String> parsedNameAndColor = parseItemNameAndColor(productDescription);
+            Map<String, String> parsedNameAndColor = parseItemNameAndColor(productDescription);
 
             ElementsCollection itemPriceAndQuantity = itemInfo.get(2).findAll("[class^=col-xs]");
             BigDecimal itemPrice = parseAmountWithCurrencyToBigDecimal(itemPriceAndQuantity.get(0).getText());
@@ -43,8 +44,8 @@ public class OrderConfirmedPage {
             int itemQuantity = Integer.parseInt(itemPriceAndQuantity.get(1).getText());
 
             orderedItemList.add(new OrderedItem(
-                    parsedNameAndColor.get(0),
-                    parsedNameAndColor.get(1),
+                    parsedNameAndColor.get("name"),
+                    parsedNameAndColor.get("color"),
                     itemPrice,
                     itemQuantity,
                     itemTotalPrice)
@@ -54,7 +55,7 @@ public class OrderConfirmedPage {
         return orderedItemList;
     }
 
-    private List<String> parseItemNameAndColor(String itemDescription) {
+    private Map<String, String> parseItemNameAndColor(String itemDescription) {
         itemDescription = itemDescription.replace(" - Color : ", ":");
         Pattern pattern = Pattern.compile("([a-zA-Z\\s]+)");
         Matcher matcher = pattern.matcher(itemDescription);
@@ -66,6 +67,9 @@ public class OrderConfirmedPage {
         if (parsedNameAndColor.size() == 1) {
             parsedNameAndColor.add("");
         }
-        return parsedNameAndColor;
+        return Map.of(
+                "name", parsedNameAndColor.get(0),
+                "color", parsedNameAndColor.get(1)
+        );
     }
 }

@@ -8,6 +8,7 @@ import enums.FilterCategories;
 import utils.Utils;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.*;
@@ -20,28 +21,27 @@ public class AccessoriesPage {
         return page(ItemPage.class);
     }
 
-    public int returnAmountOfListedItems() {
+    public int getListedItemAmount() {
         return getAllListedItems().size();
     }
 
-    public AccessoriesPage selectSpecificCheckBox(FilterCategories category, EnumCategories checkBox) {
+    public AccessoriesPage selectCheckBox(FilterCategories category, EnumCategories checkBox) {
         waitOverlayToDisappear();
         ElementsCollection checkBoxes = getFilterCategory(category).findAll("li");
         SelenideElement checkBoxElement = checkBoxes.stream()
-                .filter(el -> el.find("a").getText().contains(checkBox.returnEnumValue()))
+                .filter(el -> el.find("a").getText().contains(checkBox.getValue()))
                 .findFirst().orElse(checkBoxes.get(0));
 
         checkBoxElement.find(".custom-checkbox").scrollTo().click();
-
         return this;
     }
 
-    public AccessoriesPage changePriceRange(int newMinPrice, int newMaxPrice) {
-        int[] pixelOffsetsToMoveBy = getPixelOffsetForNewMinMaxPrice(newMinPrice, newMaxPrice);
+    public AccessoriesPage changePriceRange(BigDecimal newMinPrice, BigDecimal newMaxPrice) {
+        Map<String, Integer> pixelOffsetsToMoveBy = getPixelOffsetForNewMinMaxPrice(newMinPrice, newMaxPrice);
 
         SelenideElement leftHandle = $("[class^='ui-slider-handle']");
         actions()
-                .dragAndDropBy(leftHandle, pixelOffsetsToMoveBy[0], 0)
+                .dragAndDropBy(leftHandle, pixelOffsetsToMoveBy.get("moveByMin"), 0)
                 .release()
                 .perform();
 
@@ -49,14 +49,14 @@ public class AccessoriesPage {
 
         SelenideElement rightHandle = $("[class^='ui-slider-handle']:last-of-type");
         actions()
-                .dragAndDropBy(rightHandle, pixelOffsetsToMoveBy[1], 0)
+                .dragAndDropBy(rightHandle, pixelOffsetsToMoveBy.get("moveByMax"), 0)
                 .release()
                 .perform();
 
         return this;
     }
 
-    public boolean isAllListedItemPricesAreBetweenRange(BigDecimal minPrice, BigDecimal maxPrice) {
+    public boolean isListedItemPricesBetweenRange(BigDecimal minPrice, BigDecimal maxPrice) {
         waitOverlayToDisappear();
         return getAllListedItems().stream()
                 .map(item -> item.find(".price").getText())
@@ -67,50 +67,56 @@ public class AccessoriesPage {
                 .orElse(true);
     }
 
-    public boolean isAllListedItemColorsMatch(ColorCategories color) {
+    public boolean isListedItemColorsMatch(ColorCategories color) {
         waitOverlayToDisappear();
         return getAllListedItems().stream()
                 .map(item -> item.findAll(".variant-links a"))
                 .map(variants -> variants.stream().map(SelenideElement::getText).collect(Collectors.toList()))
-                .map(colors -> colors.contains(color.returnEnumValue()))
+                .map(colors -> colors.contains(color.getValue()))
                 .filter(result -> !result)
                 .findFirst()
                 .orElse(true);
     }
 
     private ElementsCollection getAllListedItems() {
-        return $$("[class^='product-miniature']");
+        return $$(".product-miniature");
     }
 
     private SelenideElement getFilterCategory(FilterCategories category) {
-        ElementsCollection allElements = $$("section[class='facet clearfix']");
-        return allElements.stream()
+        ElementsCollection allCategories = $$("section.facet.clearfix");
+        return allCategories.stream()
                 .filter(el -> el.find("p").getText().contentEquals(category.getCategoryText()))
-                .findFirst().orElse(allElements.get(0));
+                .findFirst().orElse(allCategories.get(0));
     }
 
-    private int[] getListWithActualMinAndMaxPrice() {
-        SelenideElement priceElement = getFilterCategory(FilterCategories.PRICE);
-        priceElement.scrollIntoView(true);
+    private Map<String, Integer> getListWithActualMinAndMaxPrice() {
+        SelenideElement priceElement = getFilterCategory(FilterCategories.PRICE)
+                .scrollIntoView(true);
         String[] priceRange = priceElement.find("li p").getText().split(" - ");
         int initialMinPrice = Utils.parseAmountWithCurrencyToBigDecimal(priceRange[0]).intValue();
         int initialMaxPrice = Utils.parseAmountWithCurrencyToBigDecimal(priceRange[1]).intValue();
 
-        return new int[]{initialMinPrice, initialMaxPrice};
+        return Map.of(
+                "minPrice", initialMinPrice,
+                "maxPrice", initialMaxPrice
+        );
     }
 
-    private int[] getPixelOffsetForNewMinMaxPrice(int newMinPrice, int newMaxPrice) {
-        double slideWidthInPixels = $("[class^='ui-slider-range']").getSize().getWidth();
-        int[] minAndMaxPrices = getListWithActualMinAndMaxPrice();
-        int initialMinPrice = minAndMaxPrices[0];
-        int initialMaxPrice = minAndMaxPrices[1];
+    private Map<String, Integer> getPixelOffsetForNewMinMaxPrice(BigDecimal newMinPrice, BigDecimal newMaxPrice) {
+        double slideWidthInPixels = $(".ui-slider-range").getSize().getWidth();
+        Map<String, Integer> minAndMaxPrices = getListWithActualMinAndMaxPrice();
+        int initialMinPrice = minAndMaxPrices.get("minPrice");
+        int initialMaxPrice = minAndMaxPrices.get("maxPrice");
 
         int difBetweenMinAndMax = initialMaxPrice - initialMinPrice;
         double pixelsPerCurrencyUnit = slideWidthInPixels / difBetweenMinAndMax;
 
-        double moveByMin = (newMinPrice - initialMinPrice) * pixelsPerCurrencyUnit;
-        double moveByMax = (newMaxPrice - initialMaxPrice) * pixelsPerCurrencyUnit;
+        double moveByMin = (newMinPrice.intValue() - initialMinPrice) * pixelsPerCurrencyUnit;
+        double moveByMax = (newMaxPrice.intValue() - initialMaxPrice) * pixelsPerCurrencyUnit;
 
-        return new int[]{(int) moveByMin, (int) moveByMax};
+        return Map.of(
+                "moveByMin", (int) moveByMin,
+                "moveByMax", (int) moveByMax
+        );
     }
 }

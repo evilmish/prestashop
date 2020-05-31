@@ -1,6 +1,6 @@
 package enums;
 
-public enum SocialTitle {
+public enum Title {
     MR,
     MRS
 }

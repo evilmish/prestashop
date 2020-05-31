@@ -15,27 +15,26 @@ import static utils.Utils.parseAmountWithCurrencyToBigDecimal;
 public class CartPage {
 
     public String getItemName(int item) {
-        return getAllItemsInACart().get(item).find(".product-line-info a").getText();
+        return getAllItemsInCart().get(item).find(".product-line-info a").getText();
     }
 
-    public int getItemAmount(int item) {
-        String quantity = getAllItemsInACart().get(item).find("input").attr("value");
+    public int getItemQuantity(int item) {
+        String quantity = getAllItemsInCart().get(item).find("input").attr("value");
         return Integer.parseInt(quantity);
     }
 
     public BigDecimal getItemPrice(int item) {
-        String price = getAllItemsInACart().get(item).find(".price").getText();
+        String price = getAllItemsInCart().get(item).find(".price").getText();
         return parseAmountWithCurrencyToBigDecimal(price);
     }
 
     public BigDecimal getItemTotalPrice(int item) {
-        String totalPrice = getAllItemsInACart().get(item).find(".price strong").getText();
+        String totalPrice = getAllItemsInCart().get(item).find(".price strong").getText();
         return parseAmountWithCurrencyToBigDecimal(totalPrice);
-
     }
 
     public String getItemAdditionalInfo(int item) {
-        return getAllItemsInACart().get(item).find(".value").getText();
+        return getAllItemsInCart().get(item).find(".value").getText();
     }
 
     public BigDecimal getPurchaseTotalPrice() {
@@ -58,7 +57,7 @@ public class CartPage {
     }
 
     public BigDecimal getAllItemTotalPrice() {
-        int itemQuantity = getAllItemsInACart().size();
+        int itemQuantity = getAllItemsInCart().size();
         BigDecimal sumOfTotalPrices = ZERO;
         for (int i = 0; i < itemQuantity; i++) {
             sumOfTotalPrices = sumOfTotalPrices.add(getItemTotalPrice(i));
@@ -67,7 +66,7 @@ public class CartPage {
     }
 
     public List<OrderedItem> getOrderedItemsList() {
-        ElementsCollection itemQuantity = getAllItemsInACart();
+        ElementsCollection itemQuantity = getAllItemsInCart();
         ArrayList<OrderedItem> itemList = new ArrayList<>();
 
         for (int i = 0; i < itemQuantity.size(); i++) {
@@ -75,14 +74,13 @@ public class CartPage {
                     getItemName(i),
                     getItemAdditionalInfo(i),
                     getItemPrice(i),
-                    getItemAmount(i),
+                    getItemQuantity(i),
                     getItemTotalPrice(i)));
         }
-
         return itemList;
     }
 
-    private ElementsCollection getAllItemsInACart() {
+    private ElementsCollection getAllItemsInCart() {
         return $$(".cart-item");
     }
 }
