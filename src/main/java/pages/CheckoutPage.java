@@ -60,6 +60,6 @@ public class CheckoutPage {
 
     public BigDecimal getTotalPrice() {
         String totalPrice = $("#payment-option-1-additional-information dd:first-of-type").getText();
-        return Utils.parseAmountWithCurrencyToBigDecimal(totalPrice);
+        return Utils.parsePriceToBigDecimal(totalPrice);
     }
 }

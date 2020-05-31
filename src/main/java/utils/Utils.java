@@ -14,7 +14,7 @@ public class Utils {
         throw new IllegalStateException("Utility Class");
     }
 
-    public static BigDecimal parseAmountWithCurrencyToBigDecimal(String price) {
+    public static BigDecimal parsePriceToBigDecimal(String price) {
         Pattern pattern = Pattern.compile("(\\d+\\.?\\d*)");
         Matcher matcher = pattern.matcher(price);
         if (matcher.find()) {

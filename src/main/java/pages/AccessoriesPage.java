@@ -60,7 +60,7 @@ public class AccessoriesPage {
         waitOverlayToDisappear();
         return getAllListedItems().stream()
                 .map(item -> item.find(".price").getText())
-                .map(Utils::parseAmountWithCurrencyToBigDecimal)
+                .map(Utils::parsePriceToBigDecimal)
                 .map(value -> value.compareTo(minPrice) >= 0 && value.compareTo(maxPrice) <= 0)
                 .filter(result -> !result)
                 .findFirst()
@@ -93,8 +93,8 @@ public class AccessoriesPage {
         SelenideElement priceElement = getFilterCategory(FilterCategories.PRICE)
                 .scrollIntoView(true);
         String[] priceRange = priceElement.find("li p").getText().split(" - ");
-        int initialMinPrice = Utils.parseAmountWithCurrencyToBigDecimal(priceRange[0]).intValue();
-        int initialMaxPrice = Utils.parseAmountWithCurrencyToBigDecimal(priceRange[1]).intValue();
+        int initialMinPrice = Utils.parsePriceToBigDecimal(priceRange[0]).intValue();
+        int initialMaxPrice = Utils.parsePriceToBigDecimal(priceRange[1]).intValue();
 
         return Map.of(
                 "minPrice", initialMinPrice,

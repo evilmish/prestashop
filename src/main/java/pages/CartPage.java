@@ -10,7 +10,7 @@ import java.util.List;
 
 import static com.codeborne.selenide.Selenide.*;
 import static java.math.BigDecimal.ZERO;
-import static utils.Utils.parseAmountWithCurrencyToBigDecimal;
+import static utils.Utils.parsePriceToBigDecimal;
 
 public class CartPage {
 
@@ -25,12 +25,12 @@ public class CartPage {
 
     public BigDecimal getItemPrice(int item) {
         String price = getAllItemsInCart().get(item).find(".price").getText();
-        return parseAmountWithCurrencyToBigDecimal(price);
+        return parsePriceToBigDecimal(price);
     }
 
     public BigDecimal getItemTotalPrice(int item) {
         String totalPrice = getAllItemsInCart().get(item).find(".price strong").getText();
-        return parseAmountWithCurrencyToBigDecimal(totalPrice);
+        return parsePriceToBigDecimal(totalPrice);
     }
 
     public String getItemAdditionalInfo(int item) {
@@ -41,7 +41,7 @@ public class CartPage {
         String totalPrice = $("[class$='cart-summary-totals'] [class='value']")
                 .shouldBe(Condition.visible)
                 .getText();
-        return parseAmountWithCurrencyToBigDecimal(totalPrice);
+        return parsePriceToBigDecimal(totalPrice);
     }
 
     public CheckoutPage goToCheckOutPage() {

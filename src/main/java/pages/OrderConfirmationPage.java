@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.codeborne.selenide.Selenide.*;
-import static utils.Utils.parseAmountWithCurrencyToBigDecimal;
+import static utils.Utils.parsePriceToBigDecimal;
 
 public class OrderConfirmationPage {
 
@@ -25,7 +25,7 @@ public class OrderConfirmationPage {
     }
 
     public BigDecimal getTotalPrice() {
-        return parseAmountWithCurrencyToBigDecimal($(".total-value").getText());
+        return parsePriceToBigDecimal($(".total-value").getText());
     }
 
     public List<OrderedItem> getOrderedItems() {
@@ -39,8 +39,8 @@ public class OrderConfirmationPage {
             Map<String, String> parsedNameAndColor = parseItemNameAndColor(productDescription);
 
             ElementsCollection itemPriceAndQuantity = itemInfo.get(2).findAll("[class^=col-xs]");
-            BigDecimal itemPrice = parseAmountWithCurrencyToBigDecimal(itemPriceAndQuantity.get(0).getText());
-            BigDecimal itemTotalPrice = parseAmountWithCurrencyToBigDecimal(itemPriceAndQuantity.get(2).getText());
+            BigDecimal itemPrice = parsePriceToBigDecimal(itemPriceAndQuantity.get(0).getText());
+            BigDecimal itemTotalPrice = parsePriceToBigDecimal(itemPriceAndQuantity.get(2).getText());
             int itemQuantity = Integer.parseInt(itemPriceAndQuantity.get(1).getText());
 
             orderedItemList.add(new OrderedItem(
