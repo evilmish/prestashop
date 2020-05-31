@@ -90,7 +90,6 @@ public class PrestaShopTest extends TestBase {
 
         // Check a price is correctly calculated
         int addedItemQuantity = cartPage.getItemAmount(0);
-        String itemName = cartPage.getItemName(0);
         BigDecimal firstAddedItemPrice = cartPage.getItemPrice(0);
         BigDecimal firstAddedItemTotalPrice = cartPage.getItemTotalPrice(0);
         BigDecimal firstItemExpectedTotalPrice = firstAddedItemPrice.multiply(BigDecimal.valueOf(addedItemQuantity));
