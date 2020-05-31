@@ -24,17 +24,6 @@ public class AccessoriesPage {
         return getAllListedItems().size();
     }
 
-    public ElementsCollection getAllListedItems() {
-        return $$("[class^='product-miniature']");
-    }
-
-    private SelenideElement getFilterCategory(FilterCategories category) {
-        ElementsCollection allElements = $$("section[class='facet clearfix']");
-        return allElements.stream()
-                .filter(el -> el.find("p").getText().contentEquals(category.getCategoryText()))
-                .findFirst().orElse(allElements.get(0));
-    }
-
     public AccessoriesPage selectSpecificCheckBox(FilterCategories category, EnumCategories checkBox) {
         waitOverlayToDisappear();
         ElementsCollection checkBoxes = getFilterCategory(category).findAll("li");
@@ -89,6 +78,17 @@ public class AccessoriesPage {
                 .orElse(true);
     }
 
+    private ElementsCollection getAllListedItems() {
+        return $$("[class^='product-miniature']");
+    }
+
+    private SelenideElement getFilterCategory(FilterCategories category) {
+        ElementsCollection allElements = $$("section[class='facet clearfix']");
+        return allElements.stream()
+                .filter(el -> el.find("p").getText().contentEquals(category.getCategoryText()))
+                .findFirst().orElse(allElements.get(0));
+    }
+
     private int[] getListWithActualMinAndMaxPrice() {
         SelenideElement priceElement = getFilterCategory(FilterCategories.PRICE);
         priceElement.scrollIntoView(true);
@@ -112,8 +112,5 @@ public class AccessoriesPage {
         double moveByMax = (newMaxPrice - initialMaxPrice) * pixelsPerCurrencyUnit;
 
         return new int[]{(int) moveByMin, (int) moveByMax};
-
     }
-
-
 }

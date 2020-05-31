@@ -85,6 +85,4 @@ public class CartPage {
     private ElementsCollection getAllItemsInACart() {
         return $$(".cart-item");
     }
-
-
 }
