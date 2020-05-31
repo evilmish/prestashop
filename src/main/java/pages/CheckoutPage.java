@@ -54,9 +54,9 @@ public class CheckoutPage {
     }
 
     //TODO check name and etc
-    public OrderPage goToOrderConfirmationPage() {
+    public OrderConfirmedPage goToOrderConfirmationPage() {
         $("#payment-confirmation").click();
-        return page(OrderPage.class);
+        return page(OrderConfirmedPage.class);
     }
 
     public BigDecimal getTotalPrice() {

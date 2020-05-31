@@ -1,7 +1,6 @@
 package pages.fragments;
 
 import pages.AccessoriesPage;
-import pages.CartPage;
 import pages.SignInPage;
 
 import static com.codeborne.selenide.Selenide.$;
@@ -18,12 +17,22 @@ public class HeaderNavigationFragment {
         return page(AccessoriesPage.class);
     }
 
-    public CartPage goToCartPage() {
-        $("#_mobile_cart").click();
-        return page(CartPage.class);
+    public SignInPage logout() {
+        $(".logout").click();
+        return page(SignInPage.class);
+    }
+
+    public boolean isLogOutButtonVisible() {
+        return $(".logout").isDisplayed();
+    }
+
+    public boolean isAccountButtonVisible() {
+        return $(".account span").isDisplayed();
     }
 
     public String getLoggedUserNameAndSurname() {
         return $(".account span").getText();
     }
+
+
 }

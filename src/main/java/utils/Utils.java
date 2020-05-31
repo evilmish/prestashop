@@ -14,9 +14,9 @@ public class Utils {
         throw new IllegalStateException("Utility Class");
     }
 
-    public static BigDecimal parseAmountWithCurrencyToBigDecimal(String euro) {
+    public static BigDecimal parseAmountWithCurrencyToBigDecimal(String price) {
         Pattern pattern = Pattern.compile("(\\d+\\.?\\d*)");
-        Matcher matcher = pattern.matcher(euro);
+        Matcher matcher = pattern.matcher(price);
         if (matcher.find()) {
             return new BigDecimal(matcher.group(1));
         }

@@ -2,6 +2,7 @@ package tests;
 
 import com.codeborne.selenide.Condition;
 import lombok.Getter;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import pages.MainShopPage;
 
@@ -18,6 +19,11 @@ public class TestBase {
         this.mainPage = open("http://demo.prestashop.com/", MainShopPage.class);
         switchTo().frame("framelive");
         $("[alt='PrestaShop']").waitUntil(Condition.visible, 12000);
+    }
+
+    @AfterClass
+    protected void afterClass() {
+        closeWebDriver();
     }
 
 }

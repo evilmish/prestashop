@@ -2,8 +2,11 @@ package pages;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import pages.order_info.OrderedItem;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.codeborne.selenide.Selenide.*;
 import static java.math.BigDecimal.ZERO;
@@ -11,8 +14,8 @@ import static utils.Utils.parseAmountWithCurrencyToBigDecimal;
 
 public class CartPage {
 
-    public ElementsCollection getAllItemsInACart() {
-        return $$(".cart-item");
+    public String getItemName(int item) {
+        return getAllItemsInACart().get(item).find(".product-line-info a").getText();
     }
 
     public int getItemAmount(int item) {
@@ -29,6 +32,10 @@ public class CartPage {
         String totalPrice = getAllItemsInACart().get(item).find(".price strong").getText();
         return parseAmountWithCurrencyToBigDecimal(totalPrice);
 
+    }
+
+    public String getItemAdditionalInfo(int item) {
+        return getAllItemsInACart().get(item).find(".value").getText();
     }
 
     public BigDecimal getPurchaseTotalPrice() {
@@ -58,5 +65,26 @@ public class CartPage {
         }
         return sumOfTotalPrices;
     }
+
+    public List<OrderedItem> getOrderedItemsList() {
+        ElementsCollection itemQuantity = getAllItemsInACart();
+        ArrayList<OrderedItem> itemList = new ArrayList<>();
+
+        for (int i = 0; i < itemQuantity.size(); i++) {
+            itemList.add(new OrderedItem(
+                    getItemName(i),
+                    getItemAdditionalInfo(i),
+                    getItemPrice(i),
+                    getItemAmount(i),
+                    getItemTotalPrice(i)));
+        }
+
+        return itemList;
+    }
+
+    private ElementsCollection getAllItemsInACart() {
+        return $$(".cart-item");
+    }
+
 
 }

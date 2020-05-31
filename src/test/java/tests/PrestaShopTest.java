@@ -8,17 +8,17 @@ import org.apache.commons.lang3.RandomUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-import pages.AccessoriesPage;
-import pages.CartPage;
-import pages.CheckoutPage;
-import pages.NewAccountCreationPage;
+import pages.*;
+import pages.order_info.OrderedItem;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class PrestaShopTest extends TestBase {
     private BigDecimal purchaseTotalSummary;
     private int randomItem;
     private int listedProductQuantity;
+    private List<OrderedItem> orderedItems;
 
     @Test
     public void registerAccountTest() {
@@ -49,6 +49,8 @@ public class PrestaShopTest extends TestBase {
                 .getLoggedUserNameAndSurname();
         String expectedUser = name + " " + surName;
         Assert.assertEquals(actualUser, expectedUser, "User not logged in");
+        Assert.assertTrue(getMainPage().getNavigationBar().isLogOutButtonVisible(),
+                "Log out button not visible");
     }
 
     @Test(dependsOnMethods = {"registerAccountTest"})
@@ -57,6 +59,7 @@ public class PrestaShopTest extends TestBase {
         SoftAssert softAssert = new SoftAssert();
         int newMinPrice = 18;
         int newMaxPrice = 23;
+
         // Open "Accessories" section
         AccessoriesPage accessories = getMainPage()
                 .getNavigationBar()
@@ -87,6 +90,7 @@ public class PrestaShopTest extends TestBase {
 
         // Check a price is correctly calculated
         int addedItemQuantity = cartPage.getItemAmount(0);
+        String itemName = cartPage.getItemName(0);
         BigDecimal firstAddedItemPrice = cartPage.getItemPrice(0);
         BigDecimal firstAddedItemTotalPrice = cartPage.getItemTotalPrice(0);
         BigDecimal firstItemExpectedTotalPrice = firstAddedItemPrice.multiply(BigDecimal.valueOf(addedItemQuantity));
@@ -118,6 +122,7 @@ public class PrestaShopTest extends TestBase {
         //Check a total price is correctly calculated
         BigDecimal allItemsTotalPrice = cartPage.getAllItemTotalPrice();
         purchaseTotalSummary = cartPage.getPurchaseTotalPrice();
+        orderedItems = cartPage.getOrderedItemsList();
 
         Assert.assertEquals(allItemsTotalPrice,
                 purchaseTotalSummary,
@@ -126,6 +131,8 @@ public class PrestaShopTest extends TestBase {
 
     @Test(dependsOnMethods = {"addSecondItemToCardTest"})
     public void checkOutTest() {
+
+        SoftAssert softAssert = new SoftAssert();
 
         // Checkout
         CheckoutPage checkoutPage = new CartPage().goToCheckOutPage();
@@ -143,12 +150,37 @@ public class PrestaShopTest extends TestBase {
                 .chosePayByCheckPaymentMethod()
                 .agreeWithTerms();
 
-        Assert.assertEquals(checkoutPage.getTotalPrice(),
+        softAssert.assertEquals(checkoutPage.getTotalPrice(),
                 purchaseTotalSummary,
                 "Purchase total Summary Differs From Checkout Price");
 
         // Confirm your order and check order details
-        checkoutPage.goToOrderConfirmationPage();
+
+        OrderConfirmedPage confirmationPage = checkoutPage.goToOrderConfirmationPage();
+
+        List<OrderedItem> itemsInConfirmationPage = confirmationPage.getOrderedItems();
+        String confirmationMessage = confirmationPage.getConfirmationMessage();
+        BigDecimal totalPrice = confirmationPage.getTotalPrice();
+
+        for (int i = 0; i < itemsInConfirmationPage.size(); i++) {
+            softAssert.assertEquals(itemsInConfirmationPage.get(i).toString(), orderedItems.get(i).toString());
+        }
+        softAssert.assertEquals(confirmationMessage, "YOUR ORDER IS CONFIRMED", "Confirmation message not found");
+        softAssert.assertEquals(totalPrice, purchaseTotalSummary, "Total price differ");
+
+        softAssert.assertAll();
+    }
+
+    @Test(dependsOnMethods = {"addSecondItemToCardTest"})
+    public void logOutTest() {
+
+        // Logout, check you've been successfully logged out
+        SignInPage signInPage = new OrderConfirmedPage().getNavigationBar().logout();
+        Assert.assertFalse(signInPage.getNavigationBar().isLogOutButtonVisible(), "Log Out button is visible when should not");
+        Assert.assertFalse(signInPage.getNavigationBar().isAccountButtonVisible(), "Account button is visible when should not");
+        Assert.assertTrue(signInPage.isLoginButtonAvailable(), "Login button not visible");
 
     }
+
+
 }
