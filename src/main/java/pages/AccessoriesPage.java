@@ -18,6 +18,7 @@ public class AccessoriesPage {
 
     public ItemPage choseItem(int itemIndex) {
         getAllListedItems().get(itemIndex).click();
+        waitOverlayToDisappear();
         return page(ItemPage.class);
     }
 

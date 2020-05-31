@@ -5,6 +5,7 @@ import pages.fragments.NavigationFragment;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.page;
+import static utils.Utils.waitOverlayToDisappear;
 
 public class LoginPage {
 
@@ -13,6 +14,7 @@ public class LoginPage {
 
     public AccountCreationPage goToAccountCreationPage() {
         $(".no-account a").click();
+        waitOverlayToDisappear();
         return page(AccountCreationPage.class);
     }
 

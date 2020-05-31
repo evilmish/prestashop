@@ -5,6 +5,7 @@ import pages.LoginPage;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.page;
+import static utils.Utils.waitOverlayToDisappear;
 
 public class NavigationFragment {
 
@@ -12,16 +13,19 @@ public class NavigationFragment {
 
     public LoginPage goToLoginPage() {
         $(".user-info").click();
+        waitOverlayToDisappear();
         return page(LoginPage.class);
     }
 
     public AccessoriesPage goToAccessoriesPage() {
         $("#category-6").click();
+        waitOverlayToDisappear();
         return page(AccessoriesPage.class);
     }
 
     public LoginPage logout() {
         $(".logout").click();
+        waitOverlayToDisappear();
         return page(LoginPage.class);
     }
 

@@ -11,6 +11,7 @@ import java.util.List;
 import static com.codeborne.selenide.Selenide.*;
 import static java.math.BigDecimal.ZERO;
 import static utils.Utils.parsePriceToBigDecimal;
+import static utils.Utils.waitOverlayToDisappear;
 
 public class CartPage {
 
@@ -46,6 +47,7 @@ public class CartPage {
 
     public CheckoutPage goToCheckOutPage() {
         $("[class$='btn-primary']").click();
+        waitOverlayToDisappear();
         return page(CheckoutPage.class);
     }
 

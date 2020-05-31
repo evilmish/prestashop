@@ -2,6 +2,7 @@ package pages;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.page;
+import static utils.Utils.waitOverlayToDisappear;
 
 public class ItemPage {
 
@@ -21,6 +22,7 @@ public class ItemPage {
 
     public CartPage goToCheckoutPage() {
         $("[class$='btn-primary']").scrollTo().click();
+        waitOverlayToDisappear();
         return page(CartPage.class);
     }
 

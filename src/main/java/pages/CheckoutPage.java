@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.page;
+import static utils.Utils.waitOverlayToDisappear;
 
 public class CheckoutPage {
 
@@ -55,6 +56,7 @@ public class CheckoutPage {
 
     public OrderConfirmationPage goToOrderConfirmationPage() {
         $("#payment-confirmation").click();
+        waitOverlayToDisappear();
         return page(OrderConfirmationPage.class);
     }
 
