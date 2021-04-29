@@ -1,9 +1,6 @@
 package tests;
 
-import enums.ColorCategories;
-import enums.FilterCategories;
 import enums.Title;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -13,6 +10,11 @@ import pages.order_info.OrderedItem;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import static enums.ColorCategories.WHITE;
+import static enums.FilterCategories.COLOR;
+import static java.math.BigDecimal.valueOf;
+import static org.apache.commons.lang3.RandomStringUtils.random;
 
 public class PrestaShopTest extends TestBase {
     private BigDecimal purchaseTotalPrice;
@@ -27,7 +29,7 @@ public class PrestaShopTest extends TestBase {
         String surName = "Knoxville";
 
         //small hack to have always new email so we dont face issue with "email already exists"
-        String randomString = RandomStringUtils.random(7, true, false);
+        String randomString = random(7, true, false);
         String email = name + "." + surName + "@" + randomString + ".com";
 
         // Register an account, check you're logged in
@@ -43,6 +45,7 @@ public class PrestaShopTest extends TestBase {
                 .enterEmail(email)
                 .enterPassword("123456")
                 .agreeWithTerms()
+                .agreeWithDataPrivacy()
                 .submitRegistrationForm();
 
         String actualUser = getMainPage()
@@ -58,8 +61,8 @@ public class PrestaShopTest extends TestBase {
     public void addFirstItemToCartTest() {
 
         SoftAssert softAssert = new SoftAssert();
-        BigDecimal newMinPrice = BigDecimal.valueOf(18);
-        BigDecimal newMaxPrice = BigDecimal.valueOf(23);
+        BigDecimal newMinPrice = valueOf(18);
+        BigDecimal newMaxPrice = valueOf(23);
 
         // Open "Accessories" section
         AccessoriesPage accessories = getMainPage()
@@ -69,13 +72,13 @@ public class PrestaShopTest extends TestBase {
         // Filter out items of white colour within price range 18-23
         accessories
                 .changePriceRange(newMinPrice, newMaxPrice)
-                .selectCheckBox(FilterCategories.COLOR, ColorCategories.WHITE);
+                .selectCheckBox(COLOR, WHITE);
 
         // Check the items are correctly filtered
         softAssert.assertTrue(accessories.isListedItemPricesBetweenRange(newMinPrice, newMaxPrice),
                 "Some item prices are outside range - min: " + newMinPrice + " max: " + newMaxPrice);
-        softAssert.assertTrue(accessories.isListedItemColorsMatch(ColorCategories.WHITE),
-                "Some item color do not match: " + ColorCategories.WHITE.getValue());
+        softAssert.assertTrue(accessories.isListedItemColorsMatch(WHITE),
+                "Some item color do not match: " + WHITE.getValue());
 
         // Randomly choose one of items, increase quantity of items and add to cart
         listedItemAmount = accessories.getListedItemAmount();
@@ -91,7 +94,7 @@ public class PrestaShopTest extends TestBase {
         int addedItemQuantity = cartPage.getItemQuantity(0);
         BigDecimal addedItemPrice = cartPage.getItemPrice(0);
         BigDecimal addedItemTotalPrice = cartPage.getItemTotalPrice(0);
-        BigDecimal addedItemExpectedTotalPrice = addedItemPrice.multiply(BigDecimal.valueOf(addedItemQuantity));
+        BigDecimal addedItemExpectedTotalPrice = addedItemPrice.multiply(valueOf(addedItemQuantity));
         purchaseTotalPrice = cartPage.getPurchaseTotalPrice();
 
         softAssert.assertEquals(addedItemTotalPrice,

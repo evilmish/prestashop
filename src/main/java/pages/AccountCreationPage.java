@@ -40,6 +40,11 @@ public class AccountCreationPage {
         return this;
     }
 
+    public AccountCreationPage agreeWithDataPrivacy() {
+        $("[name='customer_privacy']").click();
+        return this;
+    }
+
     public void submitRegistrationForm() {
         $("[class*=form-control-submit]").click();
     }

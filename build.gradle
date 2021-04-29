@@ -12,12 +12,12 @@ repositories {
 }
 
 dependencies {
-    testCompile             group: 'org.testng', name: 'testng', version: '7.1.0'
-    compile                 group: 'com.codeborne', name: 'selenide', version: '5.5.1'
-    compile                 group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-    annotationProcessor     group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-    compile                 group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
+    testImplementation             group: 'org.testng', name: 'testng', version: '7.4.0'
+    implementation                 group: 'com.codeborne', name: 'selenide', version: '5.20.4'
+    implementation                 group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+    annotationProcessor            group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+    testAnnotationProcessor        group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+    implementation                 group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
 
 }
 

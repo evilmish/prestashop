@@ -9,7 +9,6 @@ import utils.Utils;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.*;
 import static utils.Utils.waitOverlayToDisappear;
@@ -70,13 +69,10 @@ public class AccessoriesPage {
 
     public boolean isListedItemColorsMatch(ColorCategories color) {
         waitOverlayToDisappear();
-        return getAllListedItems().stream()
-                .map(item -> item.findAll(".variant-links a"))
-                .map(variants -> variants.stream().map(SelenideElement::getText).collect(Collectors.toList()))
-                .map(colors -> colors.contains(color.getValue()))
-                .filter(result -> !result)
-                .findFirst()
-                .orElse(true);
+        ElementsCollection elements = getAllListedItems();
+        return elements.stream()
+                .map(item -> item.find("[title='" + color.getValue() + "']"))
+                .count() == elements.size();
     }
 
     private ElementsCollection getAllListedItems() {

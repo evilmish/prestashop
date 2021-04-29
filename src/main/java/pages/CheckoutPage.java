@@ -55,7 +55,7 @@ public class CheckoutPage {
     }
 
     public OrderConfirmationPage goToOrderConfirmationPage() {
-        $("#payment-confirmation").click();
+        $("#payment-confirmation .btn-primary").click();
         waitOverlayToDisappear();
         return page(OrderConfirmationPage.class);
     }
